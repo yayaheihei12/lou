@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>给我家小战士的一封信</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #4A5859 0%, #252E25 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #app {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: 50px auto;
+            text-align: center;
+            min-height: 600px;
+        }
+
+        .envelope {
+            width: 300px;
+            height: 200px;
+            background-color: #4d5d53;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: transform 0.5s;
+            z-index: 2;
+        }
+
+        .envelope:hover {
+            transform: translateY(-10px);
+        }
+
+        .envelope-front {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #4d5d53;
+            border-radius: 5px;
+            z-index: 3;
+            overflow: hidden;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background-color: #3a4a3f;
+            clip-path: polygon(0 0, 50% 100%, 100% 0);
+            z-index: 4;
+            transform-origin: top;
+            transition: transform 0.6s;
+        }
+
+        .envelope-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #5a6d61;
+            border-radius: 5px;
+            z-index: 2;
+        }
+
+        .heart-seal {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            width: 40px;
+            height: 40px;
+            background-color: #e75480;
+            z-index: 5;
+        }
+
+        .heart-seal:before,
+        .heart-seal:after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: #e75480;
+            border-radius: 50%;
+        }
+
+        .heart-seal:before {
+            top: -20px;
+            left: 0;
+        }
+
+        .heart-seal:after {
+            top: 0;
+            left: -20px;
+        }
+
+        .envelope-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            z-index: 6;
+            font-size: 14px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .letter {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 260px;
+            height: 0;
+            background-color: #fff;
+            overflow: hidden;
+            transition: height 0.8s ease-in-out;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            z-index: 1;
+            opacity: 0;
+            transform: translateX(-50%) rotate(0deg); /* 新增旋转初始状态 */
+            transform-origin: top; /* 新增旋转原点 */
+        }
+
+        .letter-content {
+            color: #333;
+            text-align: left;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-size: 18px;
+            color: #e75480;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        p {
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: translateY(20px) scale(0.8); /* 新增缩放初始状态 */
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        .signature {
+            text-align: right;
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        .bold {
+            font-weight: bold;
+            color: #4d5d53;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .app-opened .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .app-opened .letter {
+            height: 400px;
+            z-index: 10;
+            opacity: 1;
+            transform: translateX(-50%) rotate(-5deg); /* 新增旋转效果 */
+        }
+
+        .app-opened .envelope {
+            transform: translateY(420px);
+        }
+
+        .music-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+        }
+
+        .music-controls button {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .music-controls button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1); /* 新增按钮悬停缩放效果 */
+        }
+
+        .floating-heart {
+            position: fixed;
+            font-size: 24px;
+            animation: heartFall linear forwards;
+            z-index: 1;
+        }
+
+        @keyframes heartFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        #loveButton {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #e75480;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 20;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        #loveButton:hover {
+            background-color: #d64973;
+            transform: scale(1.05);
+        }
+
+        /* 新增抖动动画 */
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            50% {
+                transform: translateX(5px);
+            }
+            75% {
+                transform: translateX(-5px);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        /* 新增光影动画 */
+        @keyframes lightEffect {
+            0% {
+                box-shadow: 0 0 20px rgba(255, 255, 255, 0);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(255, 255, 255, 0.8);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(255, 255, 255, 0);
+            }
+        }
+
+        .envelope.shaking {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .envelope.light {
+            animation: lightEffect 1s ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="envelope" id="envelope">
+            <div class="envelope-front">
+                <div class="envelope-flap"></div>
+                <div class="heart-seal"></div>
+                <div class="envelope-text">点击打开</div>
+            </div>
+            <div class="envelope-back"></div>
+        </div>
+        <div class="letter" id="letter">
+            <div class="letter-content">
+                <h1>给我家小战士的 “硬核彩虹屁” 暴击信</h1>
+                <p>亲爱的小屁孩👶：</p>
+                <p>救命🆘！我严重怀疑你是部队 “魔鬼训练” 生产线上的 “特级限量款”🥇！别人训练是 “强身健体”，你训练直接是 “人体改造计划” 吧✨？每天负重跑、擒拿格斗、战术训练轮番上阵，硬生生把自己练成了 “行走的荷尔蒙炸弹💣”，这谁顶得住啊！</p>
+                <p>你这手臂肌肉💪，怕不是每天扛着战友翻山越岭练出来的吧！我打赌🤭，要是让你去参加 “扛圆木大赛”，别的队伍还在喊口号，你已经扛着圆木完成十组往返跑，顺便还能给队友当 “人肉拉力器”！每次看到你在训练场上挥拳，那手臂带起的风，都能把我吹成 “星星眼花痴”⭐✨，这爆发力，简直能一拳打碎十块砖！</p>
+                <p>还有你这胸膛💪，宽厚得像一堵钢筋混凝土墙！肯定是天天进行 “盾牌防御训练” 练出来的，安全感直接拉满！我宣布，以后这就是我的专属 “避风港”“防弹衣”“超软靠垫” 三合一豪华套餐🛡️！往你怀里一钻，感觉连八级台风都吹不散我！最绝的是你那八块腹肌，我严重怀疑是每天无数次俯卧撑、仰卧起坐，把地板都磨出火星子才换来的🔥！每一块都方方正正，摸起来像在给我的手做 “军用级按摩”💆，这线条，说是用军用卡尺量着练出来的我都信！</p>
+                <p>你这肩背，妥妥是被战术背包和钢枪 “雕刻” 出来的艺术品🎖️！又宽又结实，感觉能扛起整个军营的装备！每次看你背着背包，身姿挺拔地走在训练场上，我都忍不住幻想，你背着的不是背包，是我这个 “小拖油瓶”👫！就这身材，去参加 “军人魅力大赛”，奖杯不得被你直接 “卷” 回家🏆！</p>
+                <p>我严重怀疑你是部队派来 “勾我魂” 的秘密武器🔫！明明在训练场上是严肃到能把新兵吓哭的 “冷面教官”😾，结果一到我这儿，就变成奶凶奶凶的大宝宝🍼，眨巴着大眼睛🥺：“我要抱抱～我要抱抱～” 这反差萌，直接把我 “拿捏” 得死死的！</p>
+                <p>每次你板着脸训人，我表面上吓得 “瑟瑟发抖”😱，心里却疯狂冒粉色泡泡💖，好想冲上去 “吧唧” 亲一口你那气鼓鼓的脸颊👄，再趁机戳一戳你硬邦邦的腹肌💪，然后调皮地说：“指挥官大人，我错啦～但下次还敢😜！” 你总说我是 “小流氓”🤣，可明明是你先 “犯规”，用这超强的反差萌 “攻陷” 了我的心！有时候我故意 “偷袭” 打你两下👋，其实就是想撒撒娇，然后躲在被窝里🛏️，眼巴巴等着你来哄我～你要是不来，我就气鼓鼓地鼓起腮帮子😠，头发都能气得 “炸毛”，分分钟变身 “炸毛小狮子🦁️”，看你还敢不敢不理我！</p>
+                <p>所以！我要超大声、超认真地告诉你：我喜欢你，小屁孩🥰！我想一直牵着你的手👫，在你 “铁血战士” 和 “撒娇奶宝” 模式切换时，都紧紧抓住你！亲亲你的脸😘，揉揉你可爱的小肚子🤭，把你逗得哈哈大笑🥳，和你一辈子都不分开❤️，做那个像 “迷彩服” 一样牢牢贴在你身上的小尾巴！</p>
+                <p class="signature">—— 你家疯狂心动、爱你到 “上头” 的 “花痴女友”💖</p>
+            </div>
+        </div>
+    </div>
+    <div class="music-controls">
+        <button id="playButton">播放音乐🎵</button>
+        <button id="pauseButton">暂停音乐⏸️</button>
+    </div>
+    <button id="loveButton">我也喜欢你啦! 👊💕</button>
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("页面已加载");
+            // 初始化音频，这里更换为一个新的音频链接，可根据实际情况替换
+            let bgMusic = null;
+            try {
+                bgMusic = new Audio();
+                bgMusic.src = 'https://file-examples.com/storage/fea0d855c876dc69d999d99/2017/11/file_example_MP3_700KB.mp3';
+                bgMusic.loop = true;
+                console.log("音频已初始化");
+            } catch (e) {
+                console.error("音频初始化失败：", e);
+            }
+            // 信封点击事件
+            const envelope = document.getElementById('envelope');
+            envelope.addEventListener('click', function () {
+                console.log("信封被点击");
+                // 让信封抖动
+                envelope.classList.add('shaking');
+                setTimeout(() => {
+                    envelope.classList.remove('shaking');
+                }, 500);
+                // 增加光影效果
+                envelope.classList.add('light');
+                setTimeout(() => {
+                    envelope.classList.remove('light');
+                }, 1000);
+
+                // 打开信封动画
+                const app = document.getElementById('app');
+                app.classList.add('app-opened');
+                // 显示"我也喜欢你"按钮
+                const loveButton = document.getElementById('loveButton');
+                loveButton.style.display = 'block';
+                // 尝试播放背景音乐
+                if (bgMusic) {
+                    bgMusic.play().catch(error => {
+                        console.log("音乐播放失败：", error);
+                    });
+                }
+                // 文字逐行显示动画
+                const paragraphs = document.querySelectorAll('.letter-content p');
+                paragraphs.forEach((para, index) => {
+                    setTimeout(() => {
+                        para.style.opacity = '1';
+                        para.style.transform = 'translateY(0) scale(1)'; // 新增缩放效果
+                        // 创建飘落的爱心
+                        createHearts(3);
+                    }, 800 + (index * 600));
+                });
+            });
+            // 音乐控制
+            document.getElementById('playButton').addEventListener('click', function () {
+                if (bgMusic) {
+                    bgMusic.play().catch(e => console.log("播放失败：", e));
+                }
+            });
+            document.getElementById('pauseButton').addEventListener('click', function () {
+                if (bgMusic) {
+                    bgMusic.pause();
+                }
+            });
+            // 爱心按钮
+            document.getElementById('loveButton').addEventListener('click', function () {
+                const hearts = ['❤️', '💕', '💓', '💗', '💖'];
+                const randomHeart = hearts[Math.floor(Math.random() * hearts.length)];
+                alert(`我也喜欢你啦! ${randomHeart}`);
+                createHearts(30);
+            });
+            // 创建飘落的爱心
+            function createHearts(count) {
+                for (let i = 0; i < count; i++) {
+                    const heart = document.createElement('span');
+                    heart.innerHTML = '❤️';
+                    heart.className = 'floating-heart';
+                    heart.style.left = Math.random() * 100 + 'vw';
+                    heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    document.body.appendChild(heart);
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 5000);
+                }
+            }
+            // 页面加载时创建一些随机飘落的爱心
+            createHearts(10);
+        });
+    </script>
+</body>
+
+</html>    
